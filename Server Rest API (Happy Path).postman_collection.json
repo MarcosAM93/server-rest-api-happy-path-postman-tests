@@ -1,0 +1,618 @@
+{
+	"info": {
+		"_postman_id": "5007d671-fa3f-496f-8da5-46425b3070e5",
+		"name": "Server Rest API Tests",
+		"description": "Collection testing the happy path to the server rest API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26426404"
+	},
+	"item": [
+		{
+			"name": "Server Rest API (Happy Path)",
+			"item": [
+				{
+					"name": "Cadastrar usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"pm.environment.set(\"happy_path_login_id\", json_response._id);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has property ID\", function () {\r",
+									"    pm.expect(json_response).to.be.an(\"object\");\r",
+									"    pm.expect(json_response).to.have.property(\"_id\")\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has message\", function () {\r",
+									"    pm.expect(json_response.message).to.be.a(\"string\").to.equal(\"Cadastro realizado com sucesso\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"H.P\",\r\n    \"email\": \"HP@qa.com.br\",\r\n    \"password\": \"happypath\",\r\n    \"administrador\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server_api}}/usuarios",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Register user to use the API"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar usuário por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has user body\", function () {\r",
+									"    pm.expect(json_response).to.have.property(\"nome\");\r",
+									"    pm.expect(json_response).to.have.property(\"email\");\r",
+									"    pm.expect(json_response).to.have.property(\"password\");\r",
+									"    pm.expect(json_response).to.have.property(\"administrador\");\r",
+									"    pm.expect(json_response).to.have.property(\"_id\");\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server_api}}/usuarios/{{happy_path_login_id}}",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"usuarios",
+								"{{happy_path_login_id}}"
+							]
+						},
+						"description": "Search a user by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Realizar login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"pm.environment.set(\"token_happy_path\", json_response.authorization);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has property authorization\", function () {\r",
+									"   pm.expect(json_response).to.have.property(\"authorization\")\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has message\", function () {\r",
+									"    pm.expect(json_response).to.have.property(\"message\").to.be.a(\"string\").to.equal(\"Login realizado com sucesso\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has token\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"authorization\").to.not.equal(undefined);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "HP@qa.com.br",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "happypath",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{server_api}}/login",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Logs in"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar produto",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"pm.environment.set(\"pc_gamer_id\", json_response._id);\r",
+									"\r",
+									"pm.test(\"Status 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has desired properties\", function () {\r",
+									"    pm.expect(json_response).to.have.property(\"message\").to.be.a(\"string\").to.equal(\"Cadastro realizado com sucesso\");\r",
+									"    pm.expect(json_response).to.have.property(\"_id\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token_happy_path}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"PC gamer\",\r\n  \"preco\": 4000 ,\r\n  \"descricao\": \"Computador\",\r\n  \"quantidade\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{server_api}}/produtos",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"produtos"
+							]
+						},
+						"description": "Resgister a product"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar Carrinho",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									" let json_data = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Validate message\", function () {\r",
+									"    pm.expect(json_response.message).to.be.a(\"string\").to.equal(\"Cadastro realizado com sucesso\")\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"carrinho_pc_gamer_id\", json_response._id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token_happy_path}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"produtos\": [\r\n        {\r\n            \"idProduto\": \"{{pc_gamer_id}}\",\r\n            \"quantidade\": 1\r\n        }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{server_api}}/carrinhos",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"carrinhos"
+							]
+						},
+						"description": "Register cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Concluir Compra",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_data = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate property\", function () {\r",
+									"    pm.expect(json_data.message).to.be.a(\"string\").to.equal(\"Registro excluído com sucesso\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_happy_path}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{server_api}}/carrinhos/concluir-compra",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"carrinhos",
+								"concluir-compra"
+							]
+						},
+						"description": "Delete cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Ler carrinho excluido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has message\", function () {\r",
+									"    pm.expect(json_response.message).to.be.a(\"string\").to.equal(\"Carrinho não encontrado\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server_api}}/carrinhos/{{carrinho_pc_gamer_id}}",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"carrinhos",
+								"{{carrinho_pc_gamer_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar produto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_data = pm.response.json(); ",
+									"",
+									"pm.test('Status 200', function () {",
+									"    pm.expect(pm.response.code).to.be.eql(200);",
+									"})",
+									"",
+									"pm.test(\"Verify properties\", function () {",
+									"    let json_data = pm.response.json();",
+									"    pm.expect(json_data.message).to.be.a(\"string\").to.equal(\"Registro excluído com sucesso\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token_happy_path}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{server_api}}/produtos/{{pc_gamer_id}}",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"produtos",
+								"{{pc_gamer_id}}"
+							]
+						},
+						"description": "Delete the product"
+					},
+					"response": []
+				},
+				{
+					"name": "Ler produto excluído",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has message\", function (){\r",
+									"    pm.expect(json_response.message).to.be.a(\"string\").to.equal(\"Produto não encontrado\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server_api}}/produtos/{{pc_gamer_id}}",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"produtos",
+								"{{pc_gamer_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir usuário",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_data = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate message\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"message\").to.be.a(\"string\").to.equal(\"Registro excluído com sucesso\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.unset(\"happy_path_login_id\");\r",
+									"pm.environment.unset(\"token_happy_path\");\r",
+									"pm.environment.unset(\"carrinho_pc_gamer_id\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{server_api}}/usuarios/{{happy_path_login_id}}",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"usuarios",
+								"{{happy_path_login_id}}"
+							]
+						},
+						"description": "Delete user"
+					},
+					"response": []
+				},
+				{
+					"name": "Ler usuario inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let json_response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has message\", function () {\r",
+									"   pm.expect(json_response.message).to.be.a(\"string\").to.equal(\"Usuário não encontrado\");\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server_api}}/usuarios/{{id_admin}}",
+							"host": [
+								"{{server_api}}"
+							],
+							"path": [
+								"usuarios",
+								"{{id_admin}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"pm.test(\"Response time\", function () {\r",
+					"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+					"});\r",
+					""
+				]
+			}
+		}
+	]
+}
